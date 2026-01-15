@@ -82,62 +82,38 @@ useEffect(()=>{
 
   return (
     isAuth? (
-      <>
-      <button
-      className="btn btn-danger mb-5"
-      type="button"
-      onClick={()=>checkLogin()}>
-      確認是否登入
-      </button>
- <div className="row mt-5">
-            <div className='col-6'>
+      <div className="container mt-5">
                 <h2>產品列表</h2>
-                <table className="table">
+                <table className="table mt-5">
                     <thead>
                         <tr>
+                        <th scope="col">分類</th>
                         <th scope="col">產品名稱</th>
                         <th scope="col">原價</th>
                         <th scope="col">售價</th>
                         <th scope="col">是否啟用</th>
-                        <th scope="col">查看細節</th>
+                        <th scope="col">編輯</th>
                         </tr>
                     </thead>
                     <tbody>
                         {products.map(item=>(
                         <tr key={item.id}>
                         {/* <th scope="row">1</th> */}
+                        <td>{item.category}</td>
                         <td>{item.title}</td>
                         <td>{item.origin_price}</td>
                         <td>{item.price}</td>
                         <td>{item.is_enabled ? '啟用':'未啟用'}</td>
-                        <td><button type="button" className="btn btn-primary" onClick={()=>setTempProduct(item)}>查看</button></td>
+                        <td><div class="btn-group" role="group" aria-label="Basic example">
+                              <button type="button" className="btn btn-outline-primary btn-sm">編輯</button>
+                              <button type="button" className="btn btn-outline-danger btn-sm">刪除</button>
+                            </div>
+                        </td>
                         </tr>
                         ))}
                     </tbody>
                 </table>
-            </div>
-            <div className='col-5'>
-                <h2>產品明細</h2>
-                {tempProduct ? 
-                    <div className="card">
-                    <img src={tempProduct.imageUrl} className="card-img-top" alt={tempProduct.title}/>
-                    <div className="card-body">
-                        <h5 className="card-title">{tempProduct.title}</h5>
-                        <p className="card-text">商品描述：{tempProduct.description}</p>
-                        <p className="card-text">{tempProduct.content}</p>
-                        <p className="d-flex align-items-end">價格：<del className='fs-6 text-secondary'>{tempProduct.origin_price}</del>元 / {tempProduct.price}元</p>
-                        <h5 className="card-text d-flex flex-wrap">更多圖片：</h5>
-                        <div className="d-flex flex-wrap">
-                            {tempProduct.imagesUrl.map((item)=>(
-                            <img key={item.id} src={item} alt={item.title}/>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                 : <p>選擇商品查看詳情</p>}
-            </div>
-        </div>
-            </>
+      </div>
              )
     : (
     <div className="container login"> 
