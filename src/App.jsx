@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // 引入axios
 import axios from "axios";
@@ -50,7 +50,6 @@ const onSubmit= async (e)=>{
     const {token, expired}=response.data;
     document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
     // 之後用 axios 發出的所有請求，都會自動帶上 Authorization header
-    axios.defaults.headers.common['Authorization'] = `${token}`;
     getProducts();
     setIsAuth(true);//只要api打成功不管帳密對不對都登入成功
   } catch(err){
@@ -59,17 +58,26 @@ const onSubmit= async (e)=>{
   }
 }
 
-const checkLogin= async()=>{
-try{
-  const res=await axios.post(`${API_BASE}/v2/api/user/check`);
+
+useEffect(()=>{
   const token = document.cookie
   .split("; ")
   .find((row) => row.startsWith("hexToken="))
   ?.split("=")[1];
-  alert(`登入狀態${res.data.success}`);
-}catch(err){
-}
-}
+  if(token){
+    axios.defaults.headers.common['Authorization'] = `${token}`;
+  };
+  const checkLogin= async()=>{
+    try{
+      const res=await axios.post(`${API_BASE}/v2/api/user/check`);
+      console.log(`登入狀態${res.data.success}`);
+      setIsAuth(true);
+      getProducts();
+    }catch(err){
+    }
+  };
+  checkLogin();
+}, [])
 
   return (
     isAuth? (
