@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 
 // 引入axios
 import axios from "axios";
+import * as bootstrap from 'bootstrap';
 const API_BASE = import.meta.env.VITE_API_BASE;
 const API_PATH = import.meta.env.VITE_API_PATH;
+
 
 // 引入css
 import "./assets/style.css";
@@ -29,6 +31,7 @@ function App() {
   
   const [products, setProducts]=useState([]);
   const[tempProduct, setTempProduct]=useState();
+  const productModalRef=useRef(null);
   
   //call 取得產品API
   const getProducts=async ()=>{
@@ -68,6 +71,11 @@ useEffect(()=>{
   if(token){
     axios.defaults.headers.common['Authorization'] = `${token}`;
   };
+
+  productModalRef.current=new bootstrap.Modal('#productModal', {
+  keyboard: false
+})
+
   const checkLogin= async()=>{
     try{
       const res=await axios.post(`${API_BASE}/v2/api/user/check`);
@@ -80,8 +88,16 @@ useEffect(()=>{
   checkLogin();
 }, [])
 
+const openModal=()=>{
+  productModalRef.current.show()
+}
+const closeModal=()=>{
+  productModalRef.current.hide()
+}
+
   return (
-    isAuth? (
+    <>
+    {isAuth? (
       <div className="container mt-5">
                 <h2>產品列表</h2>
                  {/* 新增產品按鈕 */}
@@ -89,6 +105,7 @@ useEffect(()=>{
                   <button
                     type="button"
                     className="btn btn-primary"
+                    onClick={()=>openModal()}
                     >
                     建立新的產品
                   </button>
@@ -124,6 +141,7 @@ useEffect(()=>{
                 </table>
       </div>
              )
+             
     : (
     <div className="container login"> 
     <h1>請先登入</h1>
@@ -148,8 +166,25 @@ useEffect(()=>{
       </div>
       <button type='submit' className='btn btn-primary w-100'>登入</button>
     </form>
-    </div>) 
-    )
+    </div>)}
+      <div ref={productModalRef} className="modal fade" id="productModal" tabIndex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="productModalLabel">Modal title</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              ...
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>)
 }
 
 export default App
