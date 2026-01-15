@@ -84,6 +84,15 @@ useEffect(()=>{
     isAuth? (
       <div className="container mt-5">
                 <h2>產品列表</h2>
+                 {/* 新增產品按鈕 */}
+                <div className="text-end mt-4">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    >
+                    建立新的產品
+                  </button>
+                </div>
                 <table className="table mt-5">
                     <thead>
                         <tr>
@@ -103,8 +112,8 @@ useEffect(()=>{
                         <td>{item.title}</td>
                         <td>{item.origin_price}</td>
                         <td>{item.price}</td>
-                        <td>{item.is_enabled ? '啟用':'未啟用'}</td>
-                        <td><div class="btn-group" role="group" aria-label="Basic example">
+                        <td className={item.is_enabled && 'text-success'}>{item.is_enabled ? '啟用':'未啟用'}</td>
+                        <td><div className="btn-group" role="group" aria-label="Basic example">
                               <button type="button" className="btn btn-outline-primary btn-sm">編輯</button>
                               <button type="button" className="btn btn-outline-danger btn-sm">刪除</button>
                             </div>
