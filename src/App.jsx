@@ -50,8 +50,9 @@ const onSubmit= async (e)=>{
     const {token, expired}=response.data;
     document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
     // 之後用 axios 發出的所有請求，都會自動帶上 Authorization header
-    getProducts();
+    axios.defaults.headers.common['Authorization'] = `${token}`;
     setIsAuth(true);//只要api打成功不管帳密對不對都登入成功
+    getProducts();
   } catch(err){
     setIsAuth(false);
     alert(err.response);
