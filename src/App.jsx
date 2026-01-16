@@ -112,6 +112,7 @@ function App() {
       method='put'
     }
 
+    
     const productData={
       data:{
         ...templateProduct,
@@ -121,7 +122,7 @@ function App() {
         imageUrl:[...templateProduct.imagesUrl.filter(url=>url!=='')],
       }
     }
-
+    
     try {
       const response= await axios[method] (url, productData)
       alert(response.data);
@@ -132,7 +133,18 @@ function App() {
       
     }
   }
-
+  
+  //刪除品API
+  const delProduct=async (id)=>{
+    try {
+      const response=await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`)
+      console.log(response);
+      getProducts();
+      closeModal();
+    } catch (error) {
+      console.log(error.response);
+    }
+  }
   //call 登入API
 const onSubmit= async (e)=>{
   // console.log(`${API_BASE}/v2/admin/signin`); 驗證路徑正確
@@ -230,7 +242,7 @@ const closeModal=()=>{
                         <td className={item.is_enabled && 'text-success'}>{item.is_enabled ? '啟用':'未啟用'}</td>
                         <td><div className="btn-group" role="group" aria-label="Basic example">
                               <button onClick={()=>openModal('edit',item)} type="button" className="btn btn-outline-primary btn-sm">編輯</button>
-                              <button type="button" className="btn btn-outline-danger btn-sm">刪除</button>
+                              <button type="button" className="btn btn-outline-danger btn-sm" onClick={()=>openModal('delete', item)}>刪除</button>
                             </div>
                         </td>
                         </tr>
@@ -281,9 +293,9 @@ const closeModal=()=>{
             </div>
           </div> */}
           <div className="modal-content border-0">
-      <div className="modal-header bg-dark text-white">
+      <div className={`modal-header bg-${modalType=== 'delete' ? 'danger' :'primary'} text-white`}>
         <h5 id="productModalLabel" className="modal-title">
-          <span>新增產品</span>
+          <span>{modalType==='delete' ? '刪除': modalType==='edit' ? '編輯': '新增'}產品</span>
         </h5>
         <button
           type="button"
@@ -293,6 +305,13 @@ const closeModal=()=>{
           ></button>
       </div>
       <div className="modal-body">
+        {
+          modalType==='delete' ? (
+            <p className="fs-4">
+              確定要刪除
+              <span className="text-danger">{templateProduct.title}</span>嗎？
+            </p>) : 
+            (
         <div className="row">
           <div className="col-sm-4">
             <div className="mb-2">
@@ -463,21 +482,36 @@ const closeModal=()=>{
             </div>
           </div>
         </div>
-      </div>
-      <div className="modal-footer">
-        <button
-          type="button"
-          className="btn btn-outline-secondary"
-          data-bs-dismiss="modal"
-          onClick={() => closeModal()}
-          >
-          取消
-        </button>
-        <button type="button" className="btn btn-primary" onClick={()=>updateProduct(templateProduct.id)}>確認</button>
-      </div>
-    </div>
+            )
+          }
+          </div>
+        <div className="modal-footer">
+          {
+            modalType==='delete'?
+            (<button
+              type="button"
+              className="btn btn-danger"
+              onClick={()=>delProduct(templateProduct.id)}
+            >
+              刪除
+            </button>):(
+              <>
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                data-bs-dismiss="modal"
+                onClick={() => closeModal()}
+                >
+                取消
+              </button>
+              <button type="button" className="btn btn-primary" onClick={()=>updateProduct(templateProduct.id)}>確認</button>
+              </>
+            )
+          }
         </div>
       </div>
+          </div>
+        </div>
     </>)
 }
 
