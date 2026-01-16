@@ -103,6 +103,36 @@ function App() {
     }
   }
 
+  //更新產品API
+  const updateProduct=async (id)=>{
+    let url=`${API_BASE}/api/${API_PATH}/admin/product`
+    let method='post'
+    if(modalType==='edit'){
+      url=`${API_BASE}/api/${API_PATH}/admin/product/${id}`
+      method='put'
+    }
+
+    const productData={
+      data:{
+        ...templateProduct,
+        origin_price:Number(templateProduct.origin_price),
+        price:Number(templateProduct.price),
+        is_enabled:templateProduct.is_enabled ? 1:0,
+        imageUrl:[...templateProduct.imagesUrl.filter(url=>url!=='')],
+      }
+    }
+
+    try {
+      const response= await axios[method] (url, productData)
+      alert(response.data);
+      getProducts();
+      closeModal();
+    } catch (error) {
+      console.log(error.response)
+      
+    }
+  }
+
   //call 登入API
 const onSubmit= async (e)=>{
   // console.log(`${API_BASE}/v2/admin/signin`); 驗證路徑正確
@@ -443,7 +473,7 @@ const closeModal=()=>{
           >
           取消
         </button>
-        <button type="button" className="btn btn-primary">確認</button>
+        <button type="button" className="btn btn-primary" onClick={()=>updateProduct(templateProduct.id)}>確認</button>
       </div>
     </div>
         </div>
