@@ -10,6 +10,21 @@ const API_PATH = import.meta.env.VITE_API_PATH;
 // 引入css
 import "./assets/style.css";
 
+//modal資料抽出
+const INITIAL_TEMPLATE_DATA = {
+  id: "",
+  title: "",
+  category: "",
+  origin_price: "",
+  price: "",
+  unit: "",
+  description: "",
+  content: "",
+  is_enabled: false,
+  imageUrl: "",
+  imagesUrl: [],
+};
+
 
 
 function App() {
@@ -28,9 +43,19 @@ function App() {
       [name]:value,
     }))
   }
+  //modal input輸入處理
+   const handleModalInputChange=(e)=>{
+    const {name, value, checked, type}=e.target;
+    settemplateProduct(preData=>({
+      ...preData,
+      [name]: type=== 'checkbox' ? checked : value,
+    }))
+   }
   
   const [products, setProducts]=useState([]);
-  const[tempProduct, setTempProduct]=useState();
+  const[templateProduct, settemplateProduct]=useState(INITIAL_TEMPLATE_DATA);
+  const [modalType, setModalType]=useState('');
+
   const productModalRef=useRef(null);
   
   //call 取得產品API
@@ -88,7 +113,16 @@ useEffect(()=>{
   checkLogin();
 }, [])
 
-const openModal=()=>{
+const openModal=(type,product)=>{
+  // console.log(product);
+  setModalType(type);
+  settemplateProduct(pre=>{
+    return{
+      ...pre,
+      ...product,
+    }
+  }
+  );
   productModalRef.current.show()
 }
 const closeModal=()=>{
@@ -105,7 +139,7 @@ const closeModal=()=>{
                   <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={()=>openModal()}
+                    onClick={()=>openModal('create', INITIAL_TEMPLATE_DATA)}
                     >
                     建立新的產品
                   </button>
@@ -131,7 +165,7 @@ const closeModal=()=>{
                         <td>{item.price}</td>
                         <td className={item.is_enabled && 'text-success'}>{item.is_enabled ? '啟用':'未啟用'}</td>
                         <td><div className="btn-group" role="group" aria-label="Basic example">
-                              <button type="button" className="btn btn-outline-primary btn-sm">編輯</button>
+                              <button onClick={()=>openModal('edit',item)} type="button" className="btn btn-outline-primary btn-sm">編輯</button>
                               <button type="button" className="btn btn-outline-danger btn-sm">刪除</button>
                             </div>
                         </td>
@@ -208,26 +242,40 @@ const closeModal=()=>{
                   name="imageUrl"
                   className="form-control"
                   placeholder="請輸入圖片連結"
+                  value={templateProduct.imageUrl}
+                  onChange={(e)=>handleInputChange(e)}
                   />
               </div>
-              <img className="img-fluid" src={null} alt="主圖" />
+              {
+                templateProduct.imageUrl && 
+              <img className="img-fluid" src={templateProduct.imageUrl} alt="主圖" />
+              }
             </div>
             <div>
-              <div>
+              {
+                templateProduct.imagesUrl.map((url, index)=>{
+              <div key={index}>
 					      <label htmlFor="imageUrl" className="form-label">
 					        輸入圖片網址
 					      </label>
 					      <input
 					        type="text"
 					        className="form-control"
-					        // placeholder={`圖片網址${index + 1}`}
+					        placeholder={`圖片網址${index + 1}`}
+                  value={url}
+
 					      />
-					      <img
-                  className="img-fluid"
-                  src={null}
-                  // alt={`副圖${index + 1}`}
-                />
+                {
+                  url && 
+                  <img
+                    className="img-fluid"
+                    src={null}
+                    alt={`副圖${index + 1}`}
+                  />
+                }
 					    </div>
+                })
+              }
               <button className="btn btn-outline-primary btn-sm d-block w-100">
                 新增圖片
               </button>
@@ -247,6 +295,8 @@ const closeModal=()=>{
                 type="text"
                 className="form-control"
                 placeholder="請輸入標題"
+                value={templateProduct.title}
+                onChange={(e)=>handleInputChange(e)}
                 />
             </div>
 
@@ -259,6 +309,9 @@ const closeModal=()=>{
                   type="text"
                   className="form-control"
                   placeholder="請輸入分類"
+                  value={templateProduct.category}
+                  onChange={(e)=>handleInputChange(e)}
+
                   />
               </div>
               <div className="mb-3 col-md-6">
@@ -269,6 +322,8 @@ const closeModal=()=>{
                   type="text"
                   className="form-control"
                   placeholder="請輸入單位"
+                  value={templateProduct.unit}
+                  onChange={(e)=>handleInputChange(e)}
                   />
               </div>
             </div>
@@ -283,6 +338,8 @@ const closeModal=()=>{
                   min="0"
                   className="form-control"
                   placeholder="請輸入原價"
+                  value={templateProduct.origin_price}
+                  onChange={(e)=>handleInputChange(e)}
                   />
               </div>
               <div className="mb-3 col-md-6">
@@ -294,6 +351,8 @@ const closeModal=()=>{
                   min="0"
                   className="form-control"
                   placeholder="請輸入售價"
+                  value={templateProduct.price}
+                  onChange={(e)=>handleInputChange(e)}
                   />
               </div>
             </div>
@@ -306,6 +365,8 @@ const closeModal=()=>{
                 id="description"
                 className="form-control"
                 placeholder="請輸入產品描述"
+                value={templateProduct.description}
+                onChange={(e)=>handleInputChange(e)}
                 ></textarea>
             </div>
             <div className="mb-3">
@@ -315,6 +376,8 @@ const closeModal=()=>{
                 id="content"
                 className="form-control"
                 placeholder="請輸入說明內容"
+                value={templateProduct.content}
+                onChange={(e)=>handleInputChange(e)}
                 ></textarea>
             </div>
             <div className="mb-3">
@@ -324,6 +387,8 @@ const closeModal=()=>{
                   id="is_enabled"
                   className="form-check-input"
                   type="checkbox"
+                  checked={templateProduct.is_enabled}
+                  onChange={(e)=>handleInputChange(e)}
                   />
                 <label className="form-check-label" htmlFor="is_enabled">
                   是否啟用
