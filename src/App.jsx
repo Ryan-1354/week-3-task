@@ -46,14 +46,14 @@ function App() {
   //modal input輸入處理
    const handleModalInputChange=(e)=>{
     const {name, value, checked, type}=e.target;
-    settemplateProduct(preData=>({
+    setTemplateProduct(preData=>({
       ...preData,
       [name]: type=== 'checkbox' ? checked : value,
     }))
    }
 
    const handleModalImageChange=(index, value)=>{
-    settemplateProduct((pre)=>{
+    setTemplateProduct((pre)=>{
       const newImage=[...pre.imagesUrl]
       newImage[index]=value
       return{
@@ -62,9 +62,32 @@ function App() {
       }
     })
    }
+
+   const handleAddImage=()=>{
+    setTemplateProduct((pre)=>{
+      const newImage=[...pre.imagesUrl]
+      newImage.push('')
+      return{
+        ...pre,
+        imagesUrl:newImage
+      }
+    })
+   }
+
+   const handleRemoveImage=()=>{
+    setTemplateProduct((pre)=>{
+      const newImage=[...pre.imagesUrl]
+      newImage.pop()
+      return{
+        ...pre,
+        imagesUrl:newImage
+      }
+    })
+   }
+
   
   const [products, setProducts]=useState([]);
-  const[templateProduct, settemplateProduct]=useState(INITIAL_TEMPLATE_DATA);
+  const[templateProduct, setTemplateProduct]=useState(INITIAL_TEMPLATE_DATA);
   const [modalType, setModalType]=useState('');
 
   const productModalRef=useRef(null);
@@ -127,7 +150,7 @@ useEffect(()=>{
 const openModal=(type,product)=>{
   // console.log(product);
   setModalType(type);
-  settemplateProduct(pre=>{
+  setTemplateProduct(pre=>{
     return{
       ...pre,
       ...product,
@@ -289,12 +312,12 @@ const closeModal=()=>{
 					    </div>
                 ))
               }
-              <button className="btn btn-outline-primary btn-sm d-block w-100">
+              <button className="btn btn-outline-primary btn-sm d-block w-100" onClick={()=>handleAddImage()}>
                 新增圖片
               </button>
             </div>
             <div>
-              <button className="btn btn-outline-danger btn-sm d-block w-100">
+              <button className="btn btn-outline-danger btn-sm d-block w-100" onClick={()=>handleRemoveImage()}>
                 刪除圖片
               </button>
             </div>
