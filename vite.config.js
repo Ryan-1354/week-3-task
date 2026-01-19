@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/main-task-3/',
+  base: '/week-3-task/',
   plugins: [react()],
 })
